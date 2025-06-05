@@ -1,0 +1,159 @@
+:root {
+    --primary-color: #ffffff;
+    --primary-color-lighter: #f5f7fa;
+    --primary-color-darker: #e3e6eb;
+    --background-color: #f0f4f8;
+    --accent-color: #6c63ff;
+    --border-color: #e0e6ed;
+    --main-text-color: #232946;
+    --main-text-hover-color: #6c63ff;
+    --accent-text-color: #595959;
+    --alert-color: #ff5252;
+    --success-color: #22c55e;
+    --draw-color: #ff9800;
+    --white: #fff;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --primary-color: #181a20;
+        --primary-color-lighter: #23262f;
+        --primary-color-darker: #101217;
+        --background-color: #13151a;
+        --accent-color: #8b7cff;
+        --border-color: #23262f;
+        --main-text-color: #f3f6fa;
+        --main-text-hover-color: #8b7cff;
+        --accent-text-color: #b0b3c6;
+        --alert-color: #ff6f6f;
+        --success-color: #4ade80;
+        --draw-color: #ffb74d;
+    }
+}
+
+[data-theme="light"] {
+    --primary-color: #ffffff;
+    --primary-color-lighter: #f5f7fa;
+    --primary-color-darker: #e3e6eb;
+    --background-color: #f0f4f8;
+    --accent-color: #6c63ff;
+    --border-color: #e0e6ed;
+    --main-text-color: #232946;
+    --main-text-hover-color: #6c63ff;
+    --accent-text-color: #595959;
+    --alert-color: #ff5252;
+    --success-color: #22c55e;
+    --draw-color: #ff9800;
+}
+
+
+[data-theme="dark"] {
+    --primary-color: #181a20;
+    --primary-color-lighter: #23262f;
+    --primary-color-darker: #101217;
+    --background-color: #13151a;
+    --accent-color: #8b7cff;
+    --border-color: #23262f;
+    --main-text-color: #f3f6fa;
+    --main-text-hover-color: #8b7cff;
+    --accent-text-color: #b0b3c6;
+    --alert-color: #ff6f6f;
+    --success-color: #4ade80;
+    --draw-color: #ffb74d;
+}
+
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-family: "Gloria Hallelujah", cursive;
+    font-optical-sizing: auto;
+    font-style: normal;
+}
+
+body {
+    background-color: var(--background-color);
+}
+
+#header {
+    padding: 8px 24px;
+    width: 100%;
+    text-align: center;
+    background-color: var(--primary-color);
+    border-bottom: 1px solid var(--border-color);
+}
+
+#header h1 {
+    color: var(--main-text-color);
+    font-size: 24px;
+}
+
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+
+    margin-top: 28px;
+}
+
+.player-turn {
+    margin-bottom: 28px;
+    padding: 12px;
+    background-color: var(--primary-color);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+}
+
+#gameboard {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    gap: 8px;
+    flex-wrap: wrap;
+    width: 332px;
+    background-color: var(--primary-color);
+    border-radius: 16px;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+}
+
+#gameboard .cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 100px;
+    height: 100px;
+
+    font-size: 44px;
+
+    background-color: var(--primary-color-lighter);
+    border: 2px solid var(--border-color);
+    border-collapse: collapse;
+
+    cursor: pointer;
+    border-radius: 8px;
+}
+
+.game-control {
+    margin-top: 24px;
+    margin-bottom: 28px;
+}
+
+.restart-game {
+    background-color: var(--alert-color);
+    color: var(--white);
+    padding: 0.5rem 1rem;
+    border-radius: 0.4rem;
+    border: 2px solid var(--border-color);
+    font-weight: 550;
+    text-align: center;
+    user-select: none;
+}
