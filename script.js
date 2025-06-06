@@ -47,9 +47,42 @@ const WIN_COMBINATON = [
    ]
 ]
 
+// Player Factory
+const Player = (function () {
+
+      function createPlayer(name, mark) {
+        let _name = name
+        let _mark = mark
+
+        function changeName(newName) {
+            if (typeof newName === 'string' && newName.trim() !== '') {
+                _name = newName.trim()
+            } else {
+                console.error("Tên mới không hợp lệ.")
+            }
+        }
+
+        return {
+            name: _name,
+            mark: _mark,
+            changeName
+        }
+    }
+
+    return {
+        createPlayer
+    }
+})()
+
 // Gameboard Factory
 const Gameboard = (function () {
     const gameboard = []
+    const player1 = Player.createPlayer(PLAYER_ONE_NAME_DEFAULT, X_MARK)
+    const player2 = Player.createPlayer(PLAYER_TWO_NAME_DEFAULT, O_MARK)
+    let currentPlayer = player1
+    let winner = ''
+    let hasDraw = false
+    let gameTurns = 0
 
     function createBoard(gridSize) {
         for (let i = 0; i < gridSize; i++) {
@@ -68,75 +101,105 @@ const Gameboard = (function () {
                 firstCellSymbol === secondCellSymbol &&
                 firstCellSymbol === thirdCellSymbol
             ) {
-                console.log(firstCellSymbol)
-            }
-        }
+                winner = firstCellSymbol
+            } 
+        } 
+        
+        hasDraw = gameTurns === 10 && !winner
+    }
+
+    function addMark(rowIndex, colIndex, mark) {
+        gameboard[rowIndex][colIndex] = mark
+    }
+
+    function gameTurn() { 
+        currentPlayer = currentPlayer === player1 ? player2 : player1;
+        gameTurns++
+        return currentPlayer
+    }
+
+    function getCurrentPlayer() {
+        return currentPlayer
+    }
+
+    function isGameOver() {
+        return winner !== '' || hasDraw
     }
 
     return {
         createBoard,
-        checkWinner
-    }
-})()
-
-
-// Player Factory
-const Player = (function () {
-
-      function createPlayer(name, mark) {
-        let _name = name;  // biến private
-        let _mark = mark;
-
-        function changeName(newName) {
-            if (typeof newName === 'string' && newName.trim() !== '') {
-                _name = newName.trim();
-            } else {
-                console.error("Tên mới không hợp lệ.");
-            }
-        }
-
-        return {
-            name: _name,
-            mark: _mark,
-            changeName
-        }
-    }
-
-    return {
-        createPlayer
+        checkWinner,
+        gameTurn,
+        addMark,
+        getCurrentPlayer,
+        isGameOver
     }
 })()
 
 // DisplayController Factory
 const DisplayController = (function () {
     const boardElement = document.querySelector('#gameboard');
+    const playerTurnElemnt = document.querySelector('.player-turn')
 
-    const render = (board) => {
-        boardElement.innerHTML = '';
 
-        board.forEach((row, index) => {
-           row.forEach(cell => {
+    const renderBoard = (board) => {
+
+        board.forEach((row, rowIndex) => {
+            row.forEach((cell, colIndex) => {
                 const cellDiv = document.createElement('div');
                 cellDiv.classList.add('cell');
+                cellDiv.textContent = cell;
                 boardElement.appendChild(cellDiv);
-           })
-        });
+
+                cellDiv.addEventListener('click', () => {
+                    if (board[rowIndex][colIndex] === null && !Gameboard.isGameOver()) {
+                        const currentPlayer = Gameboard.getCurrentPlayer() 
+                        Gameboard.addMark(rowIndex, colIndex, currentPlayer.mark)
+                        Gameboard.gameTurn()
+
+                        const nextPlayer = Gameboard.getCurrentPlayer()
+                        updateTurnText(nextPlayer.name)
+                        
+                        Gameboard.checkWinner(board)
+                        if (Gameboard.isGameOver()) {
+                            DisplayController.renderGameOver()
+                        }
+                        updateBoardDisplay(board)
+                    }
+                })
+            })
+        })
     }
 
-    return { render }
+    function updateBoardDisplay(board) {
+        boardElement.innerHTML = '';
+        renderBoard(board)
+    }
+
+    function renderGameOver(result) {
+        console.log(123);
+        
+        const gameoverDiv = document.createElement('gameover');
+        
+    }
+
+    function updateTurnText(playerName) {
+        playerTurnElemnt.innerHTML = `${playerName}'s Turn`
+    }
+
+    return { renderBoard, updateBoardDisplay, renderGameOver, updateTurnText }
 
 })()
 
 
 function App() {
-    const gameboard = Gameboard.createBoard(GRID_SIZE)
-    const player1 = Player.createPlayer(PLAYER_ONE_NAME_DEFAULT, X_MARK)
-    const player2 = Player.createPlayer(PLAYER_TWO_NAME_DEFAULT, O_MARK)
-
-    DisplayController.render(gameboard)
+    DisplayController.renderBoard(Gameboard.createBoard(GRID_SIZE))
+    
+    const currentPlayer = Gameboard.getCurrentPlayer() 
+    DisplayController.updateTurnText(currentPlayer.name)
 }
 
 // // When the entire DOM has finished loading, run the App function
 document.addEventListener('DOMContentLoaded', function () {
-    App();
+    App()
 })

@@ -112,6 +112,7 @@ body {
 }
 
 #gameboard {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -156,4 +157,10 @@ body {
     font-weight: 550;
     text-align: center;
     user-select: none;
+}
+
+.gameover {
+    width: 100px;
+    height: 100px;
+    background-color: #101217;
 }
