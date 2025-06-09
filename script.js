@@ -190,16 +190,17 @@ const DisplayController = (function () {
                     if (board[rowIndex][colIndex] === null && !Gameboard.isGameOver()) {
                         const currentPlayer = Gameboard.getCurrentPlayer() 
                         Gameboard.addMark(rowIndex, colIndex, currentPlayer.mark)
-                        Gameboard.gameTurn()
-
-                        const nextPlayer = Gameboard.getCurrentPlayer()
-                        updateTurnText(nextPlayer.name)
-                        
+                    
                         const winner = Gameboard.checkWinner(board)
 
                         if (Gameboard.isGameOver()) {
                             DisplayController.renderGameOver(winner)
+                        } else {
+                            Gameboard.gameTurn()
+                            const nextPlayer = Gameboard.getCurrentPlayer()
+                            updateTurnText(nextPlayer.name)
                         }
+
                         updateBoardDisplay(board)
                     }
                 })
