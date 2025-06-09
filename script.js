@@ -115,10 +115,17 @@ const Gameboard = (function () {
             ) {
                 winner = firstCellSymbol
                 return winner
-            } 
-        } 
-        
+            }
+        }
+        return null
+    }
+
+    function checkHasDraw() {
         hasDraw = gameTurns === MAX_TURNS && !winner
+    }
+
+    function isGameOver() {
+        return winner !== '' || hasDraw
     }
 
     function addMark(rowIndex, colIndex, mark) {
@@ -133,10 +140,6 @@ const Gameboard = (function () {
 
     function getCurrentPlayer() {
         return currentPlayer
-    }
-
-    function isGameOver() {
-        return winner !== '' || hasDraw
     }
 
     function restart() {
@@ -163,6 +166,7 @@ const Gameboard = (function () {
         gameTurn,
         addMark,
         getCurrentPlayer,
+        checkHasDraw,
         isGameOver,
         restart
     }
@@ -190,13 +194,14 @@ const DisplayController = (function () {
                     if (board[rowIndex][colIndex] === null && !Gameboard.isGameOver()) {
                         const currentPlayer = Gameboard.getCurrentPlayer() 
                         Gameboard.addMark(rowIndex, colIndex, currentPlayer.mark)
-                    
+                        
+                        Gameboard.gameTurn()
                         const winner = Gameboard.checkWinner(board)
+                        Gameboard.checkHasDraw()
 
                         if (Gameboard.isGameOver()) {
                             DisplayController.renderGameOver(winner)
                         } else {
-                            Gameboard.gameTurn()
                             const nextPlayer = Gameboard.getCurrentPlayer()
                             updateTurnText(nextPlayer.name)
                         }
