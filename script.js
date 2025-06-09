@@ -1,5 +1,6 @@
 // Constant
 const GRID_SIZE = 3
+const MAX_TURNS = GRID_SIZE * GRID_SIZE
 const X_MARK = 'X'
 const O_MARK = 'O'
 const PLAYER_ONE_NAME_DEFAULT = 'Player 1'
@@ -49,8 +50,9 @@ const WIN_COMBINATON = [
 
 // Player Factory
 const Player = (function () {
+    const _players = []
 
-      function createPlayer(name, mark) {
+    function createPlayer(name, mark) {
         let _name = name
         let _mark = mark
 
@@ -58,19 +60,28 @@ const Player = (function () {
             if (typeof newName === 'string' && newName.trim() !== '') {
                 _name = newName.trim()
             } else {
-                console.error("Tên mới không hợp lệ.")
+                console.error("Unvalid name.")
             }
         }
 
-        return {
+         const player = {
             name: _name,
             mark: _mark,
             changeName
         }
+
+        _players.push(player)
+        return player
     }
 
+    function findByMark(mark) {
+        return _players.find(p => p.mark === mark)
+    }
+
+
     return {
-        createPlayer
+        createPlayer,
+        findByMark,
     }
 })()
 
@@ -84,9 +95,10 @@ const Gameboard = (function () {
     let hasDraw = false
     let gameTurns = 0
 
-    function createBoard(gridSize) {
-        for (let i = 0; i < gridSize; i++) {
-            gameboard.push(Array(gridSize).fill(null))
+
+    function createBoard() {
+        for (let i = 0; i < GRID_SIZE; i++) {
+            gameboard.push(Array(GRID_SIZE).fill(null))
         }
         return gameboard
     }
@@ -102,10 +114,11 @@ const Gameboard = (function () {
                 firstCellSymbol === thirdCellSymbol
             ) {
                 winner = firstCellSymbol
+                return winner
             } 
         } 
         
-        hasDraw = gameTurns === 10 && !winner
+        hasDraw = gameTurns === MAX_TURNS && !winner
     }
 
     function addMark(rowIndex, colIndex, mark) {
@@ -126,21 +139,43 @@ const Gameboard = (function () {
         return winner !== '' || hasDraw
     }
 
+    function restart() {
+        for (let i = 0; i < GRID_SIZE; i++) {
+           for (let j = 0; j < GRID_SIZE; j++) {
+                gameboard[i][j] = null
+           }
+        }
+
+        currentPlayer = player1
+        winner = ''
+        hasDraw = false
+        gameTurns = 0
+    }
+
+    function getGameBoard() {
+        return gameboard
+    }
+
     return {
+        getGameBoard,
         createBoard,
         checkWinner,
         gameTurn,
         addMark,
         getCurrentPlayer,
-        isGameOver
+        isGameOver,
+        restart
     }
 })()
 
 // DisplayController Factory
 const DisplayController = (function () {
-    const boardElement = document.querySelector('#gameboard');
-    const playerTurnElemnt = document.querySelector('.player-turn')
+    let boardElement, playerTurnElement = null
 
+    function init({ boardContainer, playerTurnText }) {
+        boardElement = boardContainer
+        playerTurnElement = playerTurnText
+    }
 
     const renderBoard = (board) => {
 
@@ -160,9 +195,10 @@ const DisplayController = (function () {
                         const nextPlayer = Gameboard.getCurrentPlayer()
                         updateTurnText(nextPlayer.name)
                         
-                        Gameboard.checkWinner(board)
+                        const winner = Gameboard.checkWinner(board)
+
                         if (Gameboard.isGameOver()) {
-                            DisplayController.renderGameOver()
+                            DisplayController.renderGameOver(winner)
                         }
                         updateBoardDisplay(board)
                     }
@@ -177,23 +213,66 @@ const DisplayController = (function () {
     }
 
     function renderGameOver(result) {
-        console.log(123);
+        const playerWin = Player.findByMark(result)
+
+        let gameOverHtml
         
-        const gameoverDiv = document.createElement('gameover');
-        
+        if (result) {
+            gameOverHtml = `
+                <div class="gameover">
+                    <h3 class="gameover-title">${playerWin.name}</h3>
+                    <button class="restart-btn">Play Again</button>
+                </div>
+            `
+        } else {
+            gameOverHtml = `
+                <div class="gameover">
+                    <h3 class="gameover-title">Draw! </h3>
+                    <button class="restart-btn">Play Again</button>
+                </div>
+            `
+        }
+
+        const wrapper = document.querySelector('#gameboard-wrapper') 
+     
+
+        wrapper.insertAdjacentHTML("beforeend", gameOverHtml)
+
+        // Assign event to Play Again button
+        const restartBtn = document.querySelector('.restart-btn')
+        restartBtn.addEventListener('click', () => {
+            const gameover = document.querySelector('.gameover')
+            if (gameover) {
+                gameover.remove()
+            }
+            Gameboard.restart()
+            const currentPlayer = Gameboard.getCurrentPlayer()
+             
+            updateTurnText(currentPlayer.name)
+            updateBoardDisplay(Gameboard.getGameBoard())
+        })
     }
 
     function updateTurnText(playerName) {
-        playerTurnElemnt.innerHTML = `${playerName}'s Turn`
+        playerTurnElement.innerHTML = `${playerName}'s Turn`
     }
 
-    return { renderBoard, updateBoardDisplay, renderGameOver, updateTurnText }
+    return { init, renderBoard, updateBoardDisplay, renderGameOver, updateTurnText }
 
 })()
 
 
 function App() {
-    DisplayController.renderBoard(Gameboard.createBoard(GRID_SIZE))
+    const boardContainer = document.querySelector('#gameboard')
+    const playerTurnText = document.querySelector('.player-turn')
+
+    DisplayController.init({
+        boardContainer,
+        playerTurnText
+    })
+
+    const board = Gameboard.createBoard()
+    DisplayController.renderBoard(board)
     
     const currentPlayer = Gameboard.getCurrentPlayer() 
     DisplayController.updateTurnText(currentPlayer.name)

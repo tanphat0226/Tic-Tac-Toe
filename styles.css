@@ -102,7 +102,7 @@ body {
 }
 
 .player-turn {
-    margin-bottom: 28px;
+    margin-bottom: 12px;
     padding: 12px;
     background-color: var(--primary-color);
     border: 1px solid var(--border-color);
@@ -111,15 +111,19 @@ body {
     box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
 }
 
-#gameboard {
+#gameboard-wrapper {
+    display: block;
+    width: 332px;
     position: relative;
+}
+
+#gameboard {
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 8px;
     gap: 8px;
     flex-wrap: wrap;
-    width: 332px;
     background-color: var(--primary-color);
     border-radius: 16px;
     box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
@@ -148,19 +152,38 @@ body {
     margin-bottom: 28px;
 }
 
-.restart-game {
-    background-color: var(--alert-color);
+.gameover {
+    position: absolute;
+    z-index: 1;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 30px;
+
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    box-shadow: #00000026 1.95px 1.95px 2.6px;
+
+    h3 {
+        color: white;
+        font-size: 30px;
+        margin-bottom: 12px;
+    }
+}
+
+
+
+.restart-btn {
+    background-color: var(--draw-color);
     color: var(--white);
     padding: 0.5rem 1rem;
     border-radius: 0.4rem;
-    border: 2px solid var(--border-color);
+    border: 1px solid var(--border-color);
     font-weight: 550;
     text-align: center;
     user-select: none;
-}
-
-.gameover {
-    width: 100px;
-    height: 100px;
-    background-color: #101217;
+    cursor: pointer;
 }
