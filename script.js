@@ -5,7 +5,7 @@ const X_MARK = 'X'
 const O_MARK = 'O'
 const PLAYER_ONE_NAME_DEFAULT = 'Player 1'
 const PLAYER_TWO_NAME_DEFAULT = 'Player 2'
-const WIN_COMBINATON = [
+const WINNING_COMBINATIONS = [
 	[
 		{ row: 0, col: 0 },
 		{ row: 0, col: 1 },
@@ -99,7 +99,7 @@ const Gameboard = (function () {
 	}
 
 	function checkWinner(gameboard) {
-		for (const combination of WIN_COMBINATON) {
+		for (const combination of WINNING_COMBINATIONS) {
 			const firstCellSymbol =
 				gameboard[combination[0].row][combination[0].col]
 			const secondCellSymbol =
@@ -143,9 +143,7 @@ const Gameboard = (function () {
 
 	function restart() {
 		for (let i = 0; i < GRID_SIZE; i++) {
-			for (let j = 0; j < GRID_SIZE; j++) {
-				gameboard[i][j] = null
-			}
+			gameboard[i] = Array(GRID_SIZE).fill(null)
 		}
 
 		currentPlayer = player1
@@ -209,6 +207,7 @@ const DisplayController = (function () {
 							currentPlayer.mark
 						)
 						cellDiv.textContent = currentPlayer.mark
+						cellDiv.classList.add('disabled')
 
 						const winner = Gameboard.checkWinner(board)
 						Gameboard.checkHasDraw(winner)
@@ -311,6 +310,7 @@ function App() {
 
 		if (!player1Name || !player2name) {
 			alert('Please enter name!!')
+			return
 		}
 
 		Gameboard.handleChangePlayername(player1Name, player2name)
