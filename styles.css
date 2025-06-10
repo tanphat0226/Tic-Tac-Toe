@@ -173,6 +173,7 @@ body {
 #gameboard .cell.win {
 	color: var(--success-color);
 	border: 2px solid var(--success-color);
+ animation: pulse 1s infinite;
 }
 
 @keyframes pulse {
