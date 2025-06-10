@@ -113,7 +113,7 @@ const Gameboard = (function () {
 				firstCellSymbol === thirdCellSymbol
 			) {
 				winner = firstCellSymbol
-				return winner
+				return { mark: winner, cells: combination }
 			}
 		}
 		return null
@@ -210,6 +210,8 @@ const DisplayController = (function () {
 						cellDiv.classList.add('disabled')
 
 						const winner = Gameboard.checkWinner(board)
+						console.log(winner)
+
 						Gameboard.checkHasDraw(winner)
 						Gameboard.gameTurn()
 						if (Gameboard.isGameOver()) {
@@ -230,24 +232,58 @@ const DisplayController = (function () {
 	}
 
 	function renderGameOver(result) {
-		const playerWin = Player.findByMark(result)
+		let mark = ''
+		let winCells = []
+
+		if (result && result.mark) {
+			mark = result.mark
+			winCells = result.cells
+		}
+
+		const playerWin = Player.findByMark(mark)
 
 		let gameOverHtml
 
-		if (result) {
+		// if (result) {
+		// 	gameOverHtml = `
+		//         <div class="gameover">
+		//             <h3 class="gameover-title">${playerWin.name} Win 🥳</h3>
+		//             <button class="restart-btn success">Play Again</button>
+		//         </div>
+		//     `
+		// } else {
+		// 	gameOverHtml = `
+		//         <div class="gameover">
+		//             <h3 class="gameover-title">Draw! 😐</h3>
+		//             <button class="restart-btn">Play Again</button>
+		//         </div>
+		//     `
+		// }
+		if (mark) {
 			gameOverHtml = `
-                <div class="gameover">
-                    <h3 class="gameover-title">${playerWin.name} Win 🥳</h3>
-                    <button class="restart-btn success">Play Again</button>
-                </div>
-            `
+			<div class="gameover">
+				<h3 class="gameover-title">${playerWin.name} Win 🥳</h3>
+				<button class="restart-btn success">Play Again</button>
+			</div>
+		`
+
+			// Highlight winning cells
+			winCells.forEach(({ row, col }) => {
+				console.log(row)
+				console.log(col)
+
+				const cellIndex = row * GRID_SIZE + col
+				const cell = boardElement.children[cellIndex]
+
+				cell.classList.add('win')
+			})
 		} else {
 			gameOverHtml = `
-                <div class="gameover">
-                    <h3 class="gameover-title">Draw! 😐</h3>
-                    <button class="restart-btn">Play Again</button>
-                </div>
-            `
+			<div class="gameover">
+				<h3 class="gameover-title">Draw! 😐</h3>
+				<button class="restart-btn">Play Again</button>
+			</div>
+		`
 		}
 
 		const wrapper = document.querySelector('#gameboard-wrapper')
